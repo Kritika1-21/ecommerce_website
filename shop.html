@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY Ecommerce Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <section id="header">
+        <a href="#"><img src="image/LOGO.png" class="logo" alt=""></a>
+        <div>
+            <ul id="navbar">
+                <li><a class="active" href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li>
+                    <a href="cart.html">
+                        <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </li>
+                <li id="authLink"></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="page-header">
+        <h2>#stayhome</h2>
+        <p>Save more with coupons & up to 70% off</p>
+    </section>
+    <div id="sort-options">
+        <label for="sort">Sort by:</label>
+        <select id="sort" onchange="sortProducts()">
+            <option value="default">Default</option>
+            <option value="name">Name</option>
+            <option value="price-low-to-high">Price: Low to High</option>
+            <option value="price-high-to-low">Price: High to Low</option>
+            <option value="rating">Rating</option>
+        </select>
+    </div>
+    <script>
+    </script>
+    <div id="filter-options">
+        <h4>Filter by:</h4>
+        <label for="category">Category:</label>
+        <select id="category" onchange="filterProducts()">
+            <option value="all">All</option>
+            <option value="tops">Tops</option>
+            <option value="skirts">Skirts</option>
+            <option value="dresses">Dresses</option>
+            <option value="shorts">Shorts</option>
+        </select>
+
+        <label for="price-range">Price Range:</label>
+        <select id="price-range" onchange="filterProducts()">
+            <option value="all">All</option>
+            <option value="0-500">₹0 - ₹500</option>
+            <option value="501-1000">₹501 - ₹1000</option>
+            <option value="1001-2000">₹1001 - ₹2000</option>
+        </select>
+    </div>
+    <script>
+    
+    function sortProducts() {
+            const sortOption = document.getElementById('sort').value;
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+
+            switch (sortOption) {
+                case 'name':
+                    products.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'price-low-to-high':
+                    products.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high-to-low':
+                    products.sort((a, b) => b.price - a.price);
+                    break;
+                case 'rating':
+                    products.sort((a, b) => b.rating - a.rating);
+                    break;
+                default:
+                    // default sorting logic if needed
+                    break;
+            }
+
+            displayProducts(products);
+        }
+
+        function displayProducts(products) {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+
+            products.forEach(product => {
+                const productHtml = `
+                <div class="pro" onclick="window.location.href='sproduct.html?id=${product.id}';">
+                    <img src="${product.image}" alt="${product.name}">
+                    <div class="des">
+                        <span>Cara</span>
+                        <h5>${product.name}</h5>
+                        <div class="star">
+                            ${'<i class="fa fa-star"></i>'.repeat(product.rating)}
+                            ${'<i class="fa fa-star-o"></i>'.repeat(5 - product.rating)}
+                        </div>
+                        <h4>₹ ${product.price}</h4>
+                    </div>
+                    <a href="#"><i class="fa fa-shopping-cart cart"></i></a>
+                </div>
+            `;
+                productList.insertAdjacentHTML('beforeend', productHtml);
+            });
+
+            localStorage.setItem('products', JSON.stringify(products)); // save sorted products
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('http://localhost:3000/products')
+                .then(response => response.json())
+                .then(products => {
+                    localStorage.setItem('products', JSON.stringify(products));
+                    displayProducts(products);
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        });
+    function filterProducts() {
+            const category = document.getElementById('category').value;
+            const priceRange = document.getElementById('price-range').value;
+            let products = JSON.parse(localStorage.getItem('products')) || [];
+
+            if (category !== 'all') {
+                products = products.filter(product => product.category === category);
+            }
+
+            if (priceRange !== 'all') {
+                const [minPrice, maxPrice] = priceRange.split('-').map(Number);
+                products = products.filter(product => product.price >= minPrice && product.price <= maxPrice);
+            }
+
+            displayProducts(products);
+        }
+    </script>
+    <section id="products1" class="section-p1">
+        <div class="pro-container" id="productList">
+            <!-- Products will be dynamically injected here -->
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            fetch('http://localhost:3000/products')
+                .then(response => response.json())
+                .then(products => {
+                    const productList = document.getElementById('productList');
+                    products.forEach(product => {
+                        const productHtml = `
+                            <div class="pro" onclick="window.location.href='sproduct.html?id=${product.id}';">
+                                <img src="${product.image}" alt="${product.name}">
+                                <div class="des">
+                                    <span>Cara</span>
+                                    <h5>${product.name}</h5>
+                                    <div class="star">
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                        <i class="fa fa-star"></i>
+                                    </div>
+                                    <h4>₹ ${product.price}</h4>
+                                </div>
+                                <a href="#"><i class="fa fa-shopping-cart cart"></i></a>
+                            </div>
+                        `;
+                        productList.insertAdjacentHTML('beforeend', productHtml);
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        });
+
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const authLink = document.getElementById('authLink');
+
+            if (token) {
+                authLink.innerHTML = `<a href="#" onclick="logout()">Logout</a>`;
+            } else {
+                authLink.innerHTML = `<a href="login.html">Login</a>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            alert('You have been logged out');
+            window.location.href = 'index.html';
+        }
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCountElement = document.getElementById('cart-count');
+            cartCountElement.innerText = cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+
+    <section id="pagination" class="section-p1">
+        <a href="#">1</a>
+        <a href="#">2</a>
+        <a href="#"><i class="fa fa-sign-in"></i></a>
+    </section>
+
+    <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+            <h4>Sign Up For Newsletter</h4>
+            <p>Get E-mail updates about our latest shop and <span>special offers.</span></p>
+        </div>
+        <div class="form">
+            <input type="text" placeholder="Your email address">
+            <button class="normal">Sign Up</button>
+        </div>
+    </section>
+
+    <footer class="section-p1">
+        <div class="col">
+            <img class="LOGO" src="image/LOGO.png" alt="">
+            <h4>Contact</h4>
+            <p><strong>Address:</strong> 563 Mi Road, Street 32, San Jaipur</p>
+            <p><strong>Phone:</strong> +91 7014983535</p>
+            <p><strong>Hours:</strong> 12:00 - 18:00, Mon - Sat</p>
+            <div class="follow">
+                <h4>Follow us</h4>
+                <div class="icon">
+                    <i class="fa fa-facebook-official"></i>
+                    <i class="fa fa-pinterest-square"></i>
+                    <i class="fa fa-twitter-square"></i>
+                    <i class="fa fa-instagram"></i>
+                    <i class="fa fa-youtube-play"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h4>About</h4>
+            <a href="#">About us</a>
+            <a href="#">Delivery Information</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Condition</a>
+            <a href="#">Contact us</a>
+        </div>
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="#">Sign IN</a>
+            <a href="#">View Cart</a>
+            <a href="#">My Wishlist</a>
+            <a href="#">Track My Order</a>
+            <a href="#">Help</a>
+        </div>
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play</p>
+            <div class="row">
+                <img src="image/app.jpg" alt="">
+                <img src="image/play.jpg" alt="">
+            </div>
+            <p>Secured Payment Gateway</p>
+            <img src="image/pay.png" alt="">
+        </div>
+        <div class="copyright">
+            <p>@ 2024, Tech2 etc - HTML CSS Ecommerce Template </p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

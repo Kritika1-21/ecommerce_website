@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> MY Ecommerce Website </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <section id="header">
+        <a href="/"><img src="image/LOGO.png" class="logo" alt=""></a>
+        <div>
+            <ul id="navbar">
+                <li><a class="active" href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li>
+                    <a href="cart.html">
+                        <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </li>
+                <li id="authLink"></li>
+            </ul>
+        </div>
+    </section>
+    <script>
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const authLink = document.getElementById('authLink');
+
+            if (token) {
+                authLink.innerHTML = `<a href="#" onclick="logout()">Logout</a>`;
+            } else {
+                authLink.innerHTML = `<a href="login.html">Login</a>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            alert('You have been logged out');
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+
+
+
+    <section id="page-header" class="about-header">
+        <h2>#Let's_talk</h2>
+        <p>LEAVE A MESSAGE, we love to hear from you!</p>
+    </section>
+
+    <section id="cart" class="section-p1">
+        <table width="100%">
+            <thead>
+                <tr>
+                    <td>Remove</td>
+                    <td>Image</td>
+                    <td>Product</td>
+                    <td>Price</td>
+                    <td>Quantity</td>
+                    <td>Subtotal</td>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="cart-add" class="section-p1">
+        <div id="coupan">
+            <h3>Apply Coupan</h3>
+            <div>
+                <input type="text" placeholder="Enter Your Coupan">
+                <button class="normal">Apply</button>
+            </div>
+        </div>
+        <div id="subtotal">
+            <h3>Cart Total</h3>
+            <table>
+                <tr>
+                    <td>Cart Subtotal</td>
+                    <td>₹0</td>
+                </tr>
+                <tr>
+                    <td>Shipping</td>
+                    <td>Free</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>₹0</strong></td>
+                </tr>
+            </table>
+            <button class="normal">Proceed to checkout</button>
+        </div>
+    </section>
+
+
+
+    <footer class="section-p1">
+        <div class="col">
+            <img class="LOGO" src="image/LOGO.png" alt="">
+            <h4>Contact</h4>
+            <p><strong>Address:</strong> 563 Mi Road, Street 32, San Jaipur</p>
+            <p><strong>Phone:</strong> +91 7014983535</p>
+            <p><strong>Hours:</strong> 12:00 - 18:00, Mon - Sat</p>
+            <div class="follow">
+                <h4>Follow us</h4>
+                <div class="icon">
+                    <i class="fa fa-facebook-official"></i>
+                    <i class="fa fa-pinterest-square"></i>
+                    <i class="fa fa-twitter-square"></i>
+                    <i class="fa fa-instagram"></i>
+                    <i class="fa fa-youtube-play"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h4>About</h4>
+            <a href="#">About us</a>
+            <a href="#">Delivery Information</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms & Condition</a>
+            <a href="#">Contact us</a>
+        </div>
+        <div class="col">
+            <h4>My Account</h4>
+            <a href="#">Sign IN</a>
+            <a href="#">View Cart</a>
+            <a href="#">My Wishlist</a>
+            <a href="#">Track My Order</a>
+            <a href="#">Help</a>
+        </div>
+        <div class="col install">
+            <h4>Install App</h4>
+            <p>From App Store or Google Play</p>
+            <div class="row">
+                <img src="image/app.jpg" alt="">
+                <img src="image/play.jpg" alt="">
+            </div>
+            <p>Secured Payment Gateway</p>
+            <img src="image/pay.png" alt="">
+        </div>
+        <div class="copyright">
+            <p>@ 2024, Tech2 etc - HTML CSS Ecommerce Template </p>
+        </div>
+    </footer>
+
+    <script>
+        function displayCartItems() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let cartTableBody = document.querySelector('#cart tbody');
+            cartTableBody.innerHTML = '';
+
+            let cartTotal = 0;
+
+            if (cart.length === 0) {
+                cartTableBody.innerHTML = '<tr><td colspan="6">Your cart is empty</td></tr>';
+            } else {
+                cart.forEach((item, index) => {
+                    const itemTotal = parseFloat(item.price) * item.quantity;
+                    cartTotal += itemTotal;
+
+                    cartTableBody.innerHTML += `
+                        <tr>
+                            <td><a href="#" onclick="removeCartItem(${index})"><i class="fa fa-dot-circle-o"></i></a></td>
+                            <td><img src="${item.image}" alt="${item.name}"></td>
+                            <td>${item.name} (${item.size})</td>
+                            <td>₹${parseFloat(item.price).toFixed(2)}</td>
+                            <td><input type="number" value="${item.quantity}" min="1" onchange="updateCartItem(${index}, this.value)"></td>
+                            <td>₹${itemTotal.toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            document.querySelector('#subtotal table tr:nth-child(1) td:nth-child(2)').innerText = `₹${cartTotal.toFixed(2)}`;
+            document.querySelector('#subtotal table tr:nth-child(3) td:nth-child(2)').innerText = `₹${cartTotal.toFixed(2)}`;
+        }
+
+      
+        function removeCartItem(index) {
+            let cart = JSON.parse(localStorage.getItem('cart'));
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            displayCartItems();
+        }
+
+        function placeOrder() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const userId = 1;
+
+            fetch('http://localhost:3000/place-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    cartItems: cart,
+                    total: total
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Order placed successfully') {
+                        alert('Order placed successfully!');
+                        localStorage.removeItem('cart'); 
+                        updateCartCount();
+                        window.location.href = 'index.html';
+                    } else {
+                        alert('There was an issue placing your order.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCountElement = document.getElementById('cart-count');
+            cartCountElement.innerText = cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+
+        document.querySelector('#subtotal button').addEventListener('click', placeOrder);
+        document.addEventListener('DOMContentLoaded', displayCartItems);
+    </script>
+
+</body>
+
+</html>

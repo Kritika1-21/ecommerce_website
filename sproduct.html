@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY Ecommerce Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <section id="header">
+        <a href="/"><img src="image/LOGO.png" class="logo" alt=""></a>
+        <div>
+            <ul id="navbar">
+                <li><a class="active" href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li>
+                    <a href="cart.html">
+                        <i class="fa fa-shopping-bag" aria-hidden="true"></i>
+                        <span id="cart-count" class="cart-count">0</span>
+                    </a>
+                </li>
+                <li id="authLink"></li> <!-- Placeholder for Login/Logout -->
+            </ul>
+        </div>
+    </section>
+
+    <section id="prodetails" class="section-p1">
+        <div class="single-pro-image">
+            <img src="" width="100%" id="MainImg" alt="">
+            <div class="small-img-group" id="smallImgGroup">
+                <!-- Thumbnails will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <div class="single-pro-details">
+            <h6 id="breadcrumb">Home/Product</h6>
+            <h4 id="productName">Product Name</h4>
+            <h2 id="productPrice">₹0.00</h2>
+            <select id="productSize">
+                <option>Select Size</option>
+                <option>XL</option>
+                <option>L</option>
+                <option>S</option>
+                <option>M</option>
+            </select>
+            <input type="number" value="1" id="productQuantity">
+            <button class="normal" id="addToCartBtn">Add To Cart</button>
+            <h4>Product Details</h4>
+            <span id="productDescription">Product description will go here.</span>
+        </div>
+    </section>
+
+    <section id="products1" class="section-p1">
+        <h2>Feature Products</h2>
+        <p>Summer Collection New Arrivals</p>
+        <div class="pro-container">
+            <!-- Repeat similar product structure for each featured product -->
+            <div class="pro">
+                <img src="image/d8.png" alt="">
+                <div class="des">
+                    <span>Adidas</span>
+                    <h5>Cartoon Astronaut T-shirt</h5>
+                    <div class="star">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>₹78</h4>
+                </div>
+                <a href="#"><i class="fa fa-shopping-cart cart"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (productId) {
+                fetch(`http://localhost:3000/products/${productId}`)
+                    .then(response => response.json())
+                    .then(product => {
+                        document.getElementById('MainImg').src = product.image;
+                        document.getElementById('productName').innerText = product.name;
+                        document.getElementById('productPrice').innerText = `₹ ${product.price}`;
+                        document.getElementById('productDescription').innerText = product.description || "No description available.";
+
+                        // Dynamically insert small images (thumbnails)
+                        const smallImgGroup = document.getElementById('smallImgGroup');
+                        product.images.forEach(image => {
+                            const smallImgHtml = `
+                                <div class="small-img-col">
+                                    <img src="${image}" width="100%" class="small-img" alt="">
+                                </div>`;
+                            smallImgGroup.insertAdjacentHTML('beforeend', smallImgHtml);
+                        });
+
+                        // Set up event listeners for thumbnails
+                        const smallImgs = document.getElementsByClassName('small-img');
+                        for (let i = 0; i < smallImgs.length; i++) {
+                            smallImgs[i].onclick = function () {
+                                document.getElementById('MainImg').src = this.src;
+                            };
+                        }
+                    })
+                    .catch(error => console.error('Error fetching product:', error));
+            }
+
+            // Add to Cart Function
+            document.getElementById('addToCartBtn').addEventListener('click', function () {
+                const img = document.getElementById('MainImg').src;
+                const productName = document.getElementById('productName').innerText;
+                const productPrice = document.getElementById('productPrice').innerText.replace('₹ ', '');
+                const productSize = document.getElementById('productSize').value;
+                const productQuantity = document.getElementById('productQuantity').value;
+
+                if (productSize === 'Select Size') {
+                    alert('Please select a size.');
+                    return;
+                }
+
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const existingProduct = cart.find(item => item.name === productName && item.size === productSize);
+
+                if (existingProduct) {
+                    existingProduct.quantity += parseInt(productQuantity);
+                } else {
+                    cart.push({ name: productName, price: parseFloat(productPrice), size: productSize, quantity: parseInt(productQuantity), image: img });
+                }
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert(`${productName} added to cart!`);
+                window.reload = window.location.reload();
+            });
+        });
+
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const authLink = document.getElementById('authLink');
+
+            if (token) {
+                authLink.innerHTML = `<a href="#" onclick="logout()">Logout</a>`;
+            } else {
+                authLink.innerHTML = `<a href="login.html">Login</a>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            alert('You have been logged out');
+            window.location.href = 'index.html';
+        }
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartCountElement = document.getElementById('cart-count');
+            cartCountElement.innerText = cart.reduce((count, item) => count + item.quantity, 0);
+        }
+        
+
+        document.addEventListener('DOMContentLoaded', updateCartCount);
+
+        document.addEventListener('DOMContentLoaded', checkAuthStatus);
+    </script>
+
+</body>
+
+</html>
