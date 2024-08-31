@@ -87,7 +87,7 @@
             const productId = urlParams.get('id');
 
             if (productId) {
-                fetch(`http://localhost:3000/products/${productId}`)
+                fetch(`https://ecom-api-pssg.onrender.com/products/${productId}`)
                     .then(response => response.json())
                     .then(product => {
                         document.getElementById('MainImg').src = product.image;

@@ -120,7 +120,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            fetch('http://localhost:3000/products')
+            fetch('https://ecom-api-pssg.onrender.com/products')
                 .then(response => response.json())
                 .then(products => {
                     localStorage.setItem('products', JSON.stringify(products));
@@ -154,7 +154,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
-            fetch('http://localhost:3000/products')
+            fetch('https://ecom-api-pssg.onrender.com/products')
                 .then(response => response.json())
                 .then(products => {
                     const productList = document.getElementById('productList');

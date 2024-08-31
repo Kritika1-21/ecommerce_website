@@ -131,7 +131,7 @@
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
 
-            fetch('http://localhost:3000/signup', {
+            fetch('https://ecom-api-pssg.onrender.com/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, email, password })
@@ -146,7 +146,7 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
-            fetch('http://localhost:3000/login', {
+            fetch('https://ecom-api-pssg.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })

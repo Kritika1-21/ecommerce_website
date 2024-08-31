@@ -198,7 +198,7 @@
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const userId = 1;
 
-            fetch('http://localhost:3000/place-order', {
+            fetch('https://ecom-api-pssg.onrender.com/place-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
